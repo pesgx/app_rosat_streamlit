@@ -1,17 +1,26 @@
 import streamlit as st
+from utils.db import run_query
 
-# Simulación de una autenticación básica
-USERS = {"a": "a"}
+# Función de autenticación
+def authenticate(nombre_usuario, contrasena):
+    # Consulta a la tabla de usuarios
+    query = "SELECT contrasena FROM tabla_usuarios WHERE nombre_usuario = %s"
+    resultado = run_query(query, (nombre_usuario,))
 
-def authenticate(username, password):
-    return USERS.get(username) == password
+    # Verificación de la contraseña
+    if resultado:
+        contrasena_db = resultado[0][0]  # Obtenemos la contraseña de la base de datos
+        return contrasena == contrasena_db  # Verifica si coincide
+    return False
 
+# Función para el manejo de inicio de sesión
 def login():
     st.sidebar.title("Iniciar Sesión")
-    username = st.sidebar.text_input("Usuario")
-    password = st.sidebar.text_input("Contraseña", type="password")
+    nombre_usuario = st.sidebar.text_input("Usuario")
+    contrasena = st.sidebar.text_input("Contraseña", type="password")
+
     if st.sidebar.button("Ingresar"):
-        if authenticate(username, password):
+        if authenticate(nombre_usuario, contrasena):
             st.success("Inicio de sesión exitoso")
             st.session_state["authenticated"] = True
         else:

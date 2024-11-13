@@ -1,25 +1,32 @@
-import sqlite3
+import psycopg2
 import os
+import streamlit as st
 
-# Ruta de la base de datos
-DB_PATH = os.path.join("data", "database.sqlite3")
-
-# Conexión a la base de datos
+# Configuración de la conexión a la base de datos
 def get_connection():
-    return sqlite3.connect(DB_PATH)
+    conn = psycopg2.connect(
+        host="localhost",
+        database="bd_rosat",
+        user="postgres",     # Cambia esto según el usuario de tu base de datos
+        password="pescacom_2"  # Cambia esto por la contraseña de tu base de datos
+    )
+    return conn
 
-# Función para ejecutar una consulta
+# def get_connection():
+#     conn = psycopg2.connect(
+#         host="localhost",
+#         database="bd_rosat",
+#         user="usuario_rosat",     # Cambia esto según el usuario de tu base de datos
+#         password="lauraana"  # Cambia esto por la contraseña de tu base de datos
+#     )
+#     return conn
+
+# Función para ejecutar consultas
 def run_query(query, params=()):
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute(query, params)
-        conn.commit()
-        return cursor.fetchall()
-
-# Función para añadir datos
-def add_data(query, params=()):
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute(query, params)
-        conn.commit()
-        return cursor.lastrowid
+    conn = get_connection()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(query, params)
+            return cursor.fetchall()
+    finally:
+        conn.close()
