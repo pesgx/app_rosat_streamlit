@@ -1,6 +1,5 @@
-# pages/login.py
 import streamlit as st
+from utils.auth import login
 
-def mostrar():
-    st.title("Login")
-    st.write("Por favor, ingrese sus credenciales para acceder a la aplicación.")
+def login_page():
+    login()

@@ -1,34 +1,25 @@
-# utils/db.py
 import sqlite3
+import os
 
-def conectar_bd():
-    return sqlite3.connect("data/database.sqlite3")
+# Ruta de la base de datos
+DB_PATH = os.path.join("data", "database.sqlite3")
 
-def obtener_avisos():
-    conn = conectar_bd()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM avisos")
-    avisos = cursor.fetchall()
-    conn.close()
-    return avisos
+# Conexión a la base de datos
+def get_connection():
+    return sqlite3.connect(DB_PATH)
 
-def agregar_aviso(titulo, contenido):
-    conn = conectar_bd()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO avisos (titulo, contenido) VALUES (?, ?)", (titulo, contenido))
-    conn.commit()
-    conn.close()
+# Función para ejecutar una consulta
+def run_query(query, params=()):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+        conn.commit()
+        return cursor.fetchall()
 
-def actualizar_aviso(id_aviso, titulo, contenido):
-    conn = conectar_bd()
-    cursor = conn.cursor()
-    cursor.execute("UPDATE avisos SET titulo = ?, contenido = ? WHERE id = ?", (titulo, contenido, id_aviso))
-    conn.commit()
-    conn.close()
-
-def eliminar_aviso(id_aviso):
-    conn = conectar_bd()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM avisos WHERE id = ?", (id_aviso,))
-    conn.commit()
-    conn.close()
+# Función para añadir datos
+def add_data(query, params=()):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+        conn.commit()
+        return cursor.lastrowid

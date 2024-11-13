@@ -1,10 +1,18 @@
-# utils/auth.py
 import streamlit as st
 
-def check_auth():
-    # Autenticación simple
-    usuario = st.sidebar.text_input("Usuario")
-    contrasena = st.sidebar.text_input("Contraseña", type="password")
-    if usuario == "a" and contrasena == "a":
-        st.session_state["autenticado"] = True
-    return st.session_state.get("autenticado", False)
+# Simulación de una autenticación básica
+USERS = {"a": "a"}
+
+def authenticate(username, password):
+    return USERS.get(username) == password
+
+def login():
+    st.sidebar.title("Iniciar Sesión")
+    username = st.sidebar.text_input("Usuario")
+    password = st.sidebar.text_input("Contraseña", type="password")
+    if st.sidebar.button("Ingresar"):
+        if authenticate(username, password):
+            st.success("Inicio de sesión exitoso")
+            st.session_state["authenticated"] = True
+        else:
+            st.error("Usuario o contraseña incorrectos")
